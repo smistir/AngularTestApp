@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from '../../node_modules/rxjs';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,18 @@ export class TestItemService {
   getTestItem(): Observable<string> {
     let params = new HttpParams().set('id', '5');
 
-    return this.http.get<string>(this.apiUrl, {params:params});
+    return this.http
+        .get<string>(this.apiUrl, {params:params})
+        .pipe(catchError(this.handleError));
+  }
+
+  getTestItemsList(): Observable<string[]>{
+    return this.http
+        .get<string[]>(this.apiUrl)    
+        .pipe(catchError(this.handleError));
+  }
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    return throwError('something bad happened');
   }
 }
